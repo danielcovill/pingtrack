@@ -1,5 +1,6 @@
 {
-    "hosts": ["www.google.com", "8.8.8.8"],
+    "hosts": ["www.google.com", "8.8.8.8", "192.168.1.23", "broken.host.url"],
     "db_location": "temp.db",
-    "ping_frequency": 1000
+    "ping_frequency": 1000,
+    "ping_duration": 15
 }

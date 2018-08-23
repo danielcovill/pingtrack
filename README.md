@@ -11,3 +11,5 @@ An array of hosts (by IP or URL) for which you wish to track ping data.
 File system location where you'd like to store the SQLite3 database containing the data. The app must have access to write to the listed file location.
 * ping_frequency: 
 Minimum frequency in milliseconds at which ping should occur.
+* ping_duration: 
+Time in seconds for trace to run before exiting
