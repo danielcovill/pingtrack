@@ -37,13 +37,30 @@ class Data {
         });
     }
 
+    getHostsByName(hostURLArray) {
+        const getHostList = 'SELECT Id, DomainName, IP FROM Hosts WHERE DomainName IN (?)';
+        console.log(hostURLArray);
+        
+        return new Promise((resolve, reject) => {
+            this.db.all(getHostList, hostURLArray, (err, rows) => {
+                if(!!err) {
+                    reject(err);
+                } else {
+                    console.log("rows");
+                    console.log(rows);
+                    resolve(rows);
+                }
+            });
+        });
+    }
+
     addHost(hostURL, hostIP) {
         const checkHostExists = 'SELECT Id FROM Hosts WHERE DomainName=? AND IP=?;';
         const addHost = 'INSERT INTO Hosts (DomainName, IP) VALUES (?, ?);';
 
         return new Promise((resolve, reject) => { 
             this.db.all(checkHostExists, [hostURL, hostIP], (err, rows) => {
-                if (err) {
+                if (!!err) {
                     reject(err);
                 } else if (rows.length === 0) {
                     this.db.run(addHost, [hostURL, hostIP], (err) => { (err) ? reject(err) : resolve(this.lastId); });
