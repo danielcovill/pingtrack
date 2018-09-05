@@ -31,11 +31,9 @@ data.initialize(true)
  * will ping each valid host regularly, storing the results in the database.
  */
 function pingHosts(hostList) {
-    return data.getHostsByName(hostList).then((hosts) => {
-        console.log("hosts.length");
-        console.log(hosts.length);
+    return data.getHostsByName(hostList)
+    .then((hosts) => {
         hosts.forEach((host) => {
-            console.log("host");
             console.log(host);
         });
     }).then(() => {
@@ -76,7 +74,6 @@ function setUpHosts(hostList) {
         });
         return Promise.all(dataEntryPromises);
     }).catch((err) => {
-        console.log(err.message);
         return Promise.reject(err);
     });
 }

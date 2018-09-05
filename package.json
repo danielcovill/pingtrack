@@ -1,0 +1,29 @@
+{
+  "name": "pingtrack",
+  "version": "0.1.0",
+  "description": "Ping predetermined endpoints and store the results for review.",
+  "main": "app.js",
+  "dependencies": {
+    "dns": "^0.2.2",
+    "fs": "^0.0.1-security",
+    "ping": "^0.2.2",
+    "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielcovill/pingtrack.git"
+  },
+  "keywords": [
+    "Ping", "Tracking", "Latency", "Network"
+  ],
+  "author": "Daniel Covill",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/danielcovill/pingtrack/issues"
+  },
+  "homepage": "https://github.com/danielcovill/pingtrack#readme"
+}

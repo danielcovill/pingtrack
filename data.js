@@ -38,16 +38,18 @@ class Data {
     }
 
     getHostsByName(hostURLArray) {
-        const getHostList = 'SELECT Id, DomainName, IP FROM Hosts WHERE DomainName IN (?)';
-        console.log(hostURLArray);
+        /* 
+         * This isn't a great approach as inputs aren't sanitized, but the node sqlite3 package doesn't 
+         * currently support passing in arrays for queries like this. I'll fix it later or let the node 
+         * sqlite3 package fix it. 
+         */
+        let getHostList = "SELECT Id, DomainName, IP FROM Hosts WHERE DomainName IN ('" + hostURLArray.join("','") + "')";
         
         return new Promise((resolve, reject) => {
-            this.db.all(getHostList, hostURLArray, (err, rows) => {
+            this.db.all(getHostList, (err, rows) => {
                 if(!!err) {
                     reject(err);
                 } else {
-                    console.log("rows");
-                    console.log(rows);
                     resolve(rows);
                 }
             });
