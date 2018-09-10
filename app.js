@@ -1,7 +1,7 @@
 "use strict";
-const ping = require('ping');
 const fs = require('fs');
 const Data = require('./data');
+const Pinger = require('./pinger');
 const dns = require('dns');
 
 let settings = JSON.parse(fs.readFileSync("config.json"));
@@ -13,34 +13,34 @@ data.initialize(true)
 .then(() => { 
     return setUpHosts(settings.hosts); 
 })
-// Set up a data collection object for each valid host and start pinging then
-.then(() => { 
-    return pingHosts(settings.hosts);
+// Set up a data collection object for each valid host and start pinging 
+.then((validHostIds) => { 
+    return pingHosts(validHostIds);
 })
-// Once you're done with the pinging, exit
-.then(() => { process.exit(0); })
 .catch((err) => {
     console.log(err.message);
     process.exit(1);
 });
 
 /*
- * Input: String[] containing list of hosts
- * Returns: Nothing
+ * Input: String[] containing list of hostIds
+ * Returns: Promise that contains all the resulting ping objects with their results logged in the db
  * Description: With the settings indicated in the configuration file, the method
  * will ping each valid host regularly, storing the results in the database.
  */
-function pingHosts(hostList) {
-    return data.getHostsByName(hostList)
-    .then((hosts) => {
-        hosts.forEach((host) => {
-            console.log(host);
-        });
-    }).then(() => {
-        return Promise.resolve("ok");
-    }).catch((err) => {
-        return Promise.reject(err);
+function pingHosts(validHostIds) {
+    let pingerCollection = [];
+    let pingerRunPromises = [];
+
+    validHostIds.forEach((hostId) => {
+        pingerCollection.push(new Pinger(data, hostId, settings.ping_frequency, settings.ping_duration, (settings.ping_timeout/1000)));
     });
+
+    pingerCollection.forEach((pinger) => {
+        pingerRunPromises.push(pinger.begin());
+    });
+
+    return Promise.all(pingerRunPromises);
 }
 
 /*

@@ -1,6 +1,6 @@
 {
   "name": "pingtrack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Ping predetermined endpoints and store the results for review.",
   "main": "app.js",
   "dependencies": {

@@ -37,6 +37,19 @@ class Data {
         });
     }
 
+    getHostById(hostId) {
+        let getHostById = "SELECT Id, DomainName, IP FROM Hosts WHERE Id = ?";
+        return new Promise((resolve, reject) => {
+            this.db.get(getHostById, [hostId], (err, row) => {
+                if(!!err) {
+                    reject(err);
+                } else {
+                    resolve(row);
+                }
+            });
+        });
+    }
+
     getHostsByName(hostURLArray) {
         /* 
          * This isn't a great approach as inputs aren't sanitized, but the node sqlite3 package doesn't 
@@ -56,6 +69,9 @@ class Data {
         });
     }
 
+    /*
+     * Resolves: ID of item if exists, ID of new item if added
+     */
     addHost(hostURL, hostIP) {
         const checkHostExists = 'SELECT Id FROM Hosts WHERE DomainName=? AND IP=?;';
         const addHost = 'INSERT INTO Hosts (DomainName, IP) VALUES (?, ?);';
@@ -65,7 +81,11 @@ class Data {
                 if (!!err) {
                     reject(err);
                 } else if (rows.length === 0) {
-                    this.db.run(addHost, [hostURL, hostIP], (err) => { (err) ? reject(err) : resolve(this.lastId); });
+                    // No ES6 syntax here due to "this" behavior needed
+                    // https://github.com/mapbox/node-sqlite3/issues/962
+                    this.db.run(addHost, [hostURL, hostIP], function(err) { 
+                        (err) ? reject(err) : resolve(this.lastID); 
+                    });
                 } else if (rows.length === 1) {
                     resolve(rows[0].Id)
                 } else if (rows.length > 1) {
@@ -76,10 +96,10 @@ class Data {
     }
 
     addPingResult(hostId, responseTimeMS) {
-        const addResult = "INSERT INTO Results (HostId, DateTime, ResponseTimeMS) VALUES (?, date('now'), ?);";
+        const addResult = "INSERT INTO Results (HostId, DateTime, ResponseTimeMS) VALUES (?, datetime('now'), ?);";
 
         return new Promise((resolve, reject) => {
-            this.db.run(addResult, [hostId, responseTimeMS], (err) => { (err) ? reject(err) : resolve(this.lastId); });
+            this.db.run(addResult, [hostId, responseTimeMS], (err) => { (err) ? reject(err) : resolve(this.lastID); });
         });
     }
 }
