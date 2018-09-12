@@ -3,9 +3,9 @@ Repeatedly ping one or many IP addresses or URLs, collect data, and output repor
 Run with "node app.js". To generate a report include -g as an argument followed by the desired 
 filename.
 
-# Setup
-
-# Usage
+# Setup and Usage
+> npm install
+> node app.js
 
 # Notes
 Domain names are resolved prior to executing ping requests in order to eliminate any latency found 
@@ -28,10 +28,8 @@ Time in milliseconds for trace to run before exiting
 Time in milliseconds for each ping to time out
 
 # Version Plans
-## 0.1 
-Initial version that just starts setting up hosts in the database 
 ## 0.2 (CURRENT)
 This version can ping hosts and store the data in a sqlite database
 ## 0.3 
-This version should be able to produce a report of some kind from the generated data. Using command 
-line arguments on launch you can specify if you want a report generated or to run the app.
+This version should be able to produce a report of some kind from the generated data upon 
+completing a run. 

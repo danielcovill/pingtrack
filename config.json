@@ -1,7 +1,7 @@
 {
-    "hosts": ["localhost", "www.google.com", "8.8.8.8", "192.168.1.23", "broken.host.url"],
+    "hosts": ["localhost", "8.8.8.8", "192.168.1.1", "192.168.100.1"],
     "db_location": "temp.db",
     "ping_frequency": 1000,
-    "ping_duration": 5000,
+    "ping_duration": 60000,
     "ping_timeout": 1000
 }
