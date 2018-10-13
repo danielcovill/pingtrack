@@ -1,15 +1,14 @@
-"use strict";
-const fs = require('fs');
-const Data = require('./data');
-const Pinger = require('./pinger');
-const dns = require('dns');
+import * as fs from 'fs';
+import Data from './data';
+import Pinger from './pinger';
+import * as dns from 'dns'
 
-let settings = JSON.parse(fs.readFileSync("config.json"));
-let data = new Data(settings.db_location);
+let settings: any = JSON.parse(fs.readFileSync("config.json").toString());
+let data: Data = new Data(settings.db_location);
 
-// Set up the initial database file then
+// Set up the initial database file 
 data.initialize(true)
-// Look up the IPs of the hosts and read them into the DB then
+// Look up the IPs of the hosts and read them into the DB 
 .then(() => { 
     return setUpHosts(settings.hosts); 
 })
@@ -28,11 +27,11 @@ data.initialize(true)
  * Description: With the settings indicated in the configuration file, the method
  * will ping each valid host regularly, storing the results in the database.
  */
-function pingHosts(validHostIds) {
-    let pingerCollection = [];
-    let pingerRunPromises = [];
+function pingHosts(validHostIds: Array<number>) {
+    let pingerCollection: Array<Pinger> = [];
+    let pingerRunPromises: Array<Promise<Array<number>>> = [];
 
-    validHostIds.forEach((hostId) => {
+    validHostIds.forEach((hostId: number) => {
         pingerCollection.push(new Pinger(data, hostId, settings.ping_frequency, settings.ping_duration, (settings.ping_timeout/1000)));
     });
 
@@ -47,11 +46,11 @@ function pingHosts(validHostIds) {
  * Input: String[] containing list of hosts to get IP addresses for
  * Returns: Promise resolving to String[] containing the host names for which IPs could be determined on lookup
  */
-function setUpHosts(hostList) {
-    let nameResolutionPromises = [];
-    let dataEntryPromises = [];
+function setUpHosts(hostList: Array<string>) {
+    let nameResolutionPromises: Array<Promise<any>> = [];
+    let dataEntryPromises: Array<Promise<number>> = [];
 
-    hostList.forEach((host) => {
+    hostList.forEach((host: string) => {
         nameResolutionPromises.push(new Promise((resolve) => {
             dns.lookup(host, (err, address) => {
                 if (err) {

@@ -1,20 +1,20 @@
-"use strict";
-let sqlite3 = require('sqlite3');
+import * as sqlite3 from 'sqlite3';
 
-class Data {
+export default class Data {
+    db: sqlite3.Database;
 
-    constructor (db_location) {
+    constructor (db_location: string) {
         this.db = new sqlite3.Database(db_location);
     }
 
-    initialize (forceOverwrite) {
-        const dropTableStructure=`
+    initialize (forceOverwrite: boolean) : Promise<void> {
+        const dropTableStructure: string =`
             begin;
             DROP TABLE IF EXISTS Hosts;
             DROP TABLE IF EXISTS Results;
             commit;
         `;
-        const createTableStructure= `
+        const createTableStructure: string = `
             begin;
             CREATE TABLE IF NOT EXISTS 'Hosts' (
                 Id INTEGER PRIMARY KEY,
@@ -29,7 +29,7 @@ class Data {
             );
             commit;
         `;
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve: Function, reject: Function) => {
             if(forceOverwrite) {
                 this.db.exec(dropTableStructure, (err) => { if (err) { reject(err); } });
             }
@@ -37,9 +37,9 @@ class Data {
         });
     }
 
-    getHostById(hostId) {
-        let getHostById = "SELECT Id, DomainName, IP FROM Hosts WHERE Id = ?";
-        return new Promise((resolve, reject) => {
+    getHostById(hostId: number) : Promise<any> {
+        const getHostById : string = "SELECT Id, DomainName, IP FROM Hosts WHERE Id = ?";
+        return new Promise((resolve: Function, reject: Function) => {
             this.db.get(getHostById, [hostId], (err, row) => {
                 if(!!err) {
                     reject(err);
@@ -50,15 +50,15 @@ class Data {
         });
     }
 
-    getHostsByName(hostURLArray) {
+    getHostsByName(hostURLArray: Array<string>) : Promise<Array<any>> {
         /* 
          * This isn't a great approach as inputs aren't sanitized, but the node sqlite3 package doesn't 
          * currently support passing in arrays for queries like this. I'll fix it later or let the node 
          * sqlite3 package fix it. 
          */
-        let getHostList = "SELECT Id, DomainName, IP FROM Hosts WHERE DomainName IN ('" + hostURLArray.join("','") + "')";
+        const getHostList : string = "SELECT Id, DomainName, IP FROM Hosts WHERE DomainName IN ('" + hostURLArray.join("','") + "')";
         
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve: Function, reject: Function) => {
             this.db.all(getHostList, (err, rows) => {
                 if(!!err) {
                     reject(err);
@@ -72,11 +72,11 @@ class Data {
     /*
      * Resolves: ID of item if exists, ID of new item if added
      */
-    addHost(hostURL, hostIP) {
-        const checkHostExists = 'SELECT Id FROM Hosts WHERE DomainName=? AND IP=?;';
-        const addHost = 'INSERT INTO Hosts (DomainName, IP) VALUES (?, ?);';
+    addHost(hostURL: string, hostIP: string) : Promise<number> {
+        const checkHostExists : string = 'SELECT Id FROM Hosts WHERE DomainName=? AND IP=?;';
+        const addHost : string = 'INSERT INTO Hosts (DomainName, IP) VALUES (?, ?);';
 
-        return new Promise((resolve, reject) => { 
+        return new Promise((resolve: Function, reject: Function) => { 
             this.db.all(checkHostExists, [hostURL, hostIP], (err, rows) => {
                 if (!!err) {
                     reject(err);
@@ -95,12 +95,13 @@ class Data {
         });
     }
 
-    addPingResult(hostId, responseTimeMS) {
-        const addResult = "INSERT INTO Results (HostId, DateTime, ResponseTimeMS) VALUES (?, datetime('now'), ?);";
+    addPingResult(hostId: number, responseTimeMS: number) : Promise<number> {
+        const addResult : string = "INSERT INTO Results (HostId, DateTime, ResponseTimeMS) VALUES (?, datetime('now'), ?);";
 
-        return new Promise((resolve, reject) => {
-            this.db.run(addResult, [hostId, responseTimeMS], (err) => { (err) ? reject(err) : resolve(this.lastID); });
+        return new Promise((resolve: Function, reject: Function) => {
+            this.db.run(addResult, [hostId, responseTimeMS], function(err) { 
+                (err) ? reject(err) : resolve(this.lastID); 
+            });
         });
     }
 }
-module.exports=Data;
